@@ -104,7 +104,7 @@ class SettingsViewController: UIViewController {
         let toolBar = UIToolbar ( )
         toolBar.sizeToFit ()
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: .)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: .none)
         toolBar.setItems([flexibleSpace, doneButton], animated: false)
         
         redTextField.inputAccessoryView = toolBar
