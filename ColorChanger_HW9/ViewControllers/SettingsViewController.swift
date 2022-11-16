@@ -33,21 +33,16 @@ class SettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        doneButtonOnKeyboard()
         colorView.backgroundColor = mainColor
-        setValue(for: redLabel, greenLabel, blueLabel)
-        
-        redSlider.value = mainColor.red() ?? 1.0
-        greenSlider.value = mainColor.green() ?? 1.0
-        blueSlider.value = mainColor.blue() ?? 1.0
-        
-        
-        
-        print(mainColor.red())
-        print(mainColor.green())
-        print(mainColor.blue())
-        
+        setValueFromMainController()
+       
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        view.endEditing(true)
+    }
     // MARK: - IBActions
     @IBAction func colorSliderActions(_ sender: UISlider) {
         setColor()
@@ -67,7 +62,8 @@ class SettingsViewController: UIViewController {
     
     @IBAction func doneButtonPressed(_ sender: UIButton) {
         delegate.newBackGroundColor(for: colorView.backgroundColor ?? UIColor(red: 1, green: 1, blue: 1, alpha: 1))
-        dismiss(animated: true)
+        dismiss(animated: true)      
+        
     }
     
     
@@ -80,77 +76,40 @@ class SettingsViewController: UIViewController {
             alpha: 1)
     }
     
-    private func setValue(for labels: UILabel...) {
-        labels.forEach { label in
-            switch label {
-            case redLabel:
-                redLabel.text = string(from: redSlider)
-            case greenLabel:
-                greenLabel.text = string(from: greenSlider)
-            default:
-                blueLabel.text = string(from: blueSlider)
-            }
-        }
-    }
-    
     private func string(from slider: UISlider) -> String {
         String(format: "%.2f", slider.value)
     }
-}
+    
+    private func setValueFromMainController() {
+        let ciColor = CIColor(color: colorView.backgroundColor!)
+        let red = ciColor.red
+        let green = ciColor.green
+        let blue = ciColor.blue
 
-extension UIColor {
-
-    func red() -> Float? {
-        var fRed : CGFloat = 0
-        var fGreen : CGFloat = 0
-        var fBlue : CGFloat = 0
-        var fAlpha: CGFloat = 0
-        if self.getRed(&fRed, green: &fGreen, blue: &fBlue, alpha: &fAlpha) {
-            let iRed = Float(fRed * 255.0)
-            let iGreen = Float(fGreen * 255.0)
-            let iBlue = Float(fBlue * 255.0)
-            let iAlpha = Int(fAlpha * 255.0)
-
-            return iRed
-        } else {
-            // Could not extract RGBA components:
-            return nil
-        }
+        redSlider.value = Float(red)
+        greenSlider.value = Float(green)
+        blueSlider.value = Float(blue)
+        
+        redLabel.text = string(from: redSlider)
+        redTextField.text = redLabel.text
+        
+        greenLabel.text = string(from: greenSlider)
+        greenTextField.text = greenLabel.text
+        
+        blueLabel.text = string(from: blueSlider)
+        blueTextField.text = blueLabel.text
     }
     
-    func green() -> Float? {
-        var fRed : CGFloat = 0
-        var fGreen : CGFloat = 0
-        var fBlue : CGFloat = 0
-        var fAlpha: CGFloat = 0
-        if self.getRed(&fRed, green: &fGreen, blue: &fBlue, alpha: &fAlpha) {
-            let iRed = Float(fRed * 255.0)
-            let iGreen = Float(fGreen * 255.0)
-            let iBlue = Float(fBlue * 255.0)
-            let iAlpha = Int(fAlpha * 255.0)
-
-            return iGreen
-        } else {
-            // Could not extract RGBA components:
-            return nil
-        }
-    }
-    
-    func blue() -> Float? {
-        var fRed : CGFloat = 0
-        var fGreen : CGFloat = 0
-        var fBlue : CGFloat = 0
-        var fAlpha: CGFloat = 0
-        if self.getRed(&fRed, green: &fGreen, blue: &fBlue, alpha: &fAlpha) {
-            let iRed = Float(fRed * 255.0)
-            let iGreen = Float(fGreen * 255.0)
-            let iBlue = Float(fBlue * 255.0)
-            let iAlpha = Int(fAlpha * 255.0)
-
-            return iBlue
-        } else {
-            // Could not extract RGBA components:
-            return nil
-        }
+    private func doneButtonOnKeyboard() {
+        let toolBar = UIToolbar ( )
+        toolBar.sizeToFit ()
+        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: .)
+        toolBar.setItems([flexibleSpace, doneButton], animated: false)
+        
+        redTextField.inputAccessoryView = toolBar
+        greenTextField.inputAccessoryView = toolBar
+        blueTextField.inputAccessoryView = toolBar
     }
 }
+
