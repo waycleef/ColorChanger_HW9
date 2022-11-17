@@ -35,7 +35,7 @@ class SettingsViewController: UIViewController {
         
         doneButtonOnKeyboard()
         colorView.backgroundColor = mainColor
-        setValueFromMainController()
+        setValueToMainController()
        
     }
     
@@ -80,7 +80,7 @@ class SettingsViewController: UIViewController {
         String(format: "%.2f", slider.value)
     }
     
-    private func setValueFromMainController() {
+    private func setValueToMainController() {
         let ciColor = CIColor(color: colorView.backgroundColor!)
         let red = ciColor.red
         let green = ciColor.green
@@ -104,12 +104,21 @@ class SettingsViewController: UIViewController {
         let toolBar = UIToolbar ( )
         toolBar.sizeToFit ()
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: .none)
+        
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: #selector(self.endEdditing))
+                                         
         toolBar.setItems([flexibleSpace, doneButton], animated: false)
         
         redTextField.inputAccessoryView = toolBar
         greenTextField.inputAccessoryView = toolBar
         blueTextField.inputAccessoryView = toolBar
     }
+    
+    @objc private func endEdditing() {
+        view.endEditing(true)
+    }
+    
+    
+    
 }
 
