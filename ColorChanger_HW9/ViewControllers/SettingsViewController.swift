@@ -36,6 +36,10 @@ class SettingsViewController: UIViewController {
         doneButtonOnKeyboard()
         colorView.backgroundColor = mainColor
         setValueToMainController()
+        
+//        redTextField.delegate = self
+//        greenTextField.delegate = self
+//        blueTextField.delegate = self
        
     }
     
@@ -105,7 +109,7 @@ class SettingsViewController: UIViewController {
         toolBar.sizeToFit ()
         let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
         
-        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: #selector(self.textFieldDidEndEditing(_:)))
+        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: #selector(self.endEdditing))
                                          
         toolBar.setItems([flexibleSpace, doneButton], animated: false)
         
@@ -114,33 +118,34 @@ class SettingsViewController: UIViewController {
         blueTextField.inputAccessoryView = toolBar
     }
     
-//    @objc private func endEdditing() {
-//        view.endEditing(true)
-//    }
+    @objc private func endEdditing() {
+        view.endEditing(true)
+    }
 }
 
 
 // MARK: - Table View Data Source
-extension SettingsViewController: UISearchTextFieldDelegate {
-    @objc func textFieldDidEndEditing(_ textField: UITextField) {
-        let floatFromTextField = Float(redTextField.text ?? "0.0")
-        if floatFromTextField ?? 0.5 > 1.0 && floatFromTextField ?? 0.5 < 0.0 {
-            showAlert(title: "Некорректные данные", andMessage: "введите число от 0 до 1.0", textField: nil)
-        }
-        textField.endEditing(true)
-        redSlider.value
-    }
-    
-}
-
-extension SettingsViewController {
-    private func showAlert(title: String, andMessage message: String, textField: UITextField? = nil) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "OK", style: .default) {_ in
-            textField?.text = ""
-        }
-        alert.addAction(okAction)
-        present(alert, animated: true)
-    }
-}
+//extension SettingsViewController: UISearchTextFieldDelegate {
+//    @objc func textFieldDidEndEditing(_ textField: UITextField) {
+//        let floatFromTextField = Float(redTextField.text ?? "0.0")
+//        if floatFromTextField ?? 0.5 > 1.0 && floatFromTextField ?? 0.5 < 0.0 {
+//            showAlert(title: "Некорректные данные", andMessage: "введите число от 0 до 1.0", textField: nil)
+//        }
+//        textField.endEditing(true)
+//        redSlider.value = floatFromTextField ?? 1.0
+//        redLabel.text = redTextField.text
+//    }
+//
+//}
+//
+//extension SettingsViewController {
+//    private func showAlert(title: String, andMessage message: String, textField: UITextField? = nil) {
+//        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+//        let okAction = UIAlertAction(title: "OK", style: .default) {_ in
+//            textField?.text = ""
+//        }
+//        alert.addAction(okAction)
+//        present(alert, animated: true)
+//    }
+//}
 
