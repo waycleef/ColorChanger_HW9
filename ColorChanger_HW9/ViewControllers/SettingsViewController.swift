@@ -33,7 +33,7 @@ class SettingsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        doneButtonOnKeyboard()
+        
         colorView.backgroundColor = mainColor
         setValueToMainController()
         
@@ -65,7 +65,7 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func doneButtonPressed(_ sender: UIButton) {
-        delegate.newBackGroundColor(for: colorView.backgroundColor ?? UIColor(red: 1, green: 1, blue: 1, alpha: 1))
+        delegate.newBackGroundColor(for: colorView.backgroundColor ?? .white)
         dismiss(animated: true)      
         
     }
@@ -79,6 +79,20 @@ class SettingsViewController: UIViewController {
             blue: CGFloat(blueSlider.value),
             alpha: 1)
     }
+    
+    private func setValue(for labels: UILabel...) {
+        labels.forEach { label in
+            switch label {
+            case redLabel:
+                redLabel.text = string(from: redSlider)
+            case greenLabel:
+                greenLabel.text = string(from: greenSlider)
+            default:
+                blueLabel.text = string(from: blueSlider)
+            }
+        }
+    }
+    
     
     private func string(from slider: UISlider) -> String {
         String(format: "%.2f", slider.value)
@@ -104,48 +118,83 @@ class SettingsViewController: UIViewController {
         blueTextField.text = blueLabel.text
     }
     
-    private func doneButtonOnKeyboard() {
-        let toolBar = UIToolbar ( )
-        toolBar.sizeToFit ()
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-        
-        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: #selector(self.endEdditing))
-                                         
-        toolBar.setItems([flexibleSpace, doneButton], animated: false)
-        
-        redTextField.inputAccessoryView = toolBar
-        greenTextField.inputAccessoryView = toolBar
-        blueTextField.inputAccessoryView = toolBar
-    }
-    
     @objc private func endEdditing() {
         view.endEditing(true)
     }
 }
 
 
-// MARK: - Table View Data Source
-//extension SettingsViewController: UISearchTextFieldDelegate {
-//    @objc func textFieldDidEndEditing(_ textField: UITextField) {
-//        let floatFromTextField = Float(redTextField.text ?? "0.0")
-//        if floatFromTextField ?? 0.5 > 1.0 && floatFromTextField ?? 0.5 < 0.0 {
-//            showAlert(title: "Некорректные данные", andMessage: "введите число от 0 до 1.0", textField: nil)
-//        }
-//        textField.endEditing(true)
-//        redSlider.value = floatFromTextField ?? 1.0
-//        redLabel.text = redTextField.text
-//    }
+// MARK: - UITextFieldDelegate
+extension SettingsViewController: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        
+        guard let text = textField.text else { return }
+        
+        if let currentValue = Float(text) {
+            switch textField {
+            case redTextField:
+                redSlider.setValue(currentValue, animated: true)
+                setValue(for: redLabel)
+            case greenTextField:
+                greenSlider.setValue(currentValue, animated: true)
+                setValue(for: greenLabel)
+            default:
+                blueSlider.setValue(currentValue, animated: true)
+                setValue(for: blueLabel)
+            }
+            setColor()
+            return
+        }
+        showAlert(title: "Wrong format", andMessage: "Please enter correct value", textField: nil)
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        let keyboardToolbar = UIToolbar()
+        keyboardToolbar.sizeToFit()
+        textField.inputAccessoryView = keyboardToolbar
+        
+        let doneButton = UIBarButtonItem(
+            barButtonSystemItem: .done,
+            target: self,
+            action: #selector(endEdditing)
+            )
+        
+        let flexBarButton = UIBarButtonItem(
+            barButtonSystemItem: .fixedSpace,
+            target: nil,
+            action: nil
+        )
+
+        keyboardToolbar.items = [flexBarButton, doneButton]
+    }
+}
+
+
+// MARK: - Extensions
+extension SettingsViewController {
+    func showAlert(title: String, andMessage message: String, textField: UITextField? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) {_ in
+            textField?.text = ""
+        }
+        alert.addAction(okAction)
+        present(alert, animated: true)
+    }
+}
+
+
+// черновик
+//    private func doneButtonOnKeyboard() {
+//        let toolBar = UIToolbar ( )
+//        toolBar.sizeToFit ()
+//        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
 //
-//}
+//        let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: self, action: #selector(self.endEdditing))
 //
-//extension SettingsViewController {
-//    private func showAlert(title: String, andMessage message: String, textField: UITextField? = nil) {
-//        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-//        let okAction = UIAlertAction(title: "OK", style: .default) {_ in
-//            textField?.text = ""
-//        }
-//        alert.addAction(okAction)
-//        present(alert, animated: true)
+//        toolBar.setItems([flexibleSpace, doneButton], animated: false)
+//
+//        redTextField.inputAccessoryView = toolBar
+//        greenTextField.inputAccessoryView = toolBar
+//        blueTextField.inputAccessoryView = toolBar
 //    }
-//}
 
